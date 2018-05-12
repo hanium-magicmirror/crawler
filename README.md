@@ -1,2 +1,6 @@
 # crawler
-드레스 크롤링
+
+## prepare
+- pip install bs4
+- pip install requests
+- pip install urllib
