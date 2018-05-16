@@ -2,6 +2,7 @@
 # https://www.theknot.com/fashion/sweetheart-wedding-dresses
 import requests
 import os
+os.environ["TF_CPP_MIN_LOG_LEVEL"]="3"
 import urllib.request
 from bs4 import BeautifulSoup
 
@@ -26,6 +27,9 @@ def main():
     else:
         print("Nothing to Search")
         return
+    print("input the start number of your file")
+    start = input("input: ")
+    start = int(start)
 
     # make directory
     if not os.path.exists(dir):
@@ -36,13 +40,13 @@ def main():
     urllib.request.install_opener(opener)
 
     print('Search ', dir, '\n')
-    crawlImages(1,dir)
+    crawlImages(1,dir, start)
     print("Images crawled Complete!")
     return
 
 
 # crawling the images per page
-def crawlImages(page,type):
+def crawlImages(page,type, start):
     print("Start "+str(page)+"page")
     req = requests.get('https://www.theknot.com/fashion/'+type+'-wedding-dresses?page=' + str(page), stream=True)
     html = req.text
@@ -54,10 +58,12 @@ def crawlImages(page,type):
         url = "https:" + image.get('src')
         url.replace('webp', 'png')
         url = url[:-2] + "100"
-        urllib.request.urlretrieve(url, dir + '/' + os.path.basename(url[:-12]) + '.png')
+        full_name = type + str(start)
+        urllib.request.urlretrieve(url, dir + '/' + full_name + '.png')
+        start +=1 
     next = soup.select('span.page-next')[0].get('class')
     if "inactive" not in next:
-        crawlImages(page+1,type)
+        crawlImages(page+1,type, start)
 
 if __name__ == "__main__":
     main()
